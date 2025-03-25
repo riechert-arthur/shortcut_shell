@@ -3,6 +3,7 @@
 #include <unistd.h>
 #include <sys/wait.h>
 #include <stdlib.h>
+#include <string.h>
 
 /*
  * Appends a prefix each time a user is prompted for an input and retrieves the user's input.
@@ -22,12 +23,15 @@ int main() {
 
     pid_t pid = fork();
 
-    if (pid == 0) {
+    if (strcmp(command->program_name, "cd") == 0) {
+      chdir(command->args[1]);
+    }
+    else if (pid == 0) {
       execvp(command->program_name, command->args);
       exit(0);
-    } else {
-      wait(NULL);
     }
+
+    wait(NULL);
   }
 
   return 0;
