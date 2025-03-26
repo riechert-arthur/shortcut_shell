@@ -20,7 +20,7 @@ int main() {
 
   while(poll_user_input("shortcut> ", &line, &line_len) > 0) {
     Command *command = parse_command(line);
-
+    
     pid_t pid = fork();
 
     if (strcmp(command->program_name, "cd") == 0) {
@@ -30,8 +30,8 @@ int main() {
       execvp(command->program_name, command->args);
       exit(0);
     }
-
-    wait(NULL);
+    
+    if (command->in_background == 0) wait(NULL);
   }
 
   return 0;
