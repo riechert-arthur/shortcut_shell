@@ -20,7 +20,13 @@ int main() {
 
   while(poll_user_input("shortcut> ", &line, &line_len) > 0) {
     Command *command = parse_command(line);
-    
+
+    if (!command->program_name) {
+      free(command->args);
+      free(command);
+      continue;
+    }
+
     pid_t pid = fork();
 
     if (strcmp(command->program_name, "cd") == 0) {
