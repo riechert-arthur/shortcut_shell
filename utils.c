@@ -36,6 +36,12 @@ Command* parse_command(char* command_str) {
     command->args[i++] = token;
   }
   command->program_name = command->args[0];
+  command->in_background = 0;
+
+  if (i > 0 && strcmp(command->args[i - 1], "&") == 0) {
+    command->in_background = 1;
+    command->args[i - 1] = NULL;
+  }
 
   return command;
 }
