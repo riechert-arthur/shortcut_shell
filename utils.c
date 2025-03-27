@@ -4,7 +4,7 @@
 #include <stdio.h>
 
 #define MAX_COMMAND_BYTES 1024
-#define DELIMITERS " \t\n\r"
+#define COMMAND_DELIMITERS " \t\n\r"
 
 /*
  * Returns the next non-empty token based on each byte in DELIMITERS. If no tokens remain, it
@@ -13,7 +13,7 @@
 char* next_non_empty_token(char** line) {
   char* token;
 
-  while ((token = strsep(line, DELIMITERS)) && !*token);
+  while ((token = strsep(line, COMMAND_DELIMITERS)) && !*token);
  
   return token;
 }
@@ -45,4 +45,31 @@ Command* parse_command(char* command_str) {
   }
 
   return command;
+}
+
+Pipeline* parse_pipeline(char* pipeline_str) {
+
+  char* pipeline_str_copy = strndup(pipeline_str, MAX_COMMAND_BYTES);
+  char* command_str;
+  int n = 0;
+
+  // Count the number of separate commands to be pipelined
+  for (char* curr = pipeline_str_copy; *curr; curr++) {
+    if (*curr == '|') ++n;
+  }
+
+  ++n;
+
+  Pipeline* pipeline;
+  if (!(pipeline = (Pipeline*) malloc(sizeof(Pipeline) + n * sizeof(Command*)))) {
+    return NULL;
+  }
+
+  int i = 0;
+  while ((command_str = strsep(&pipeline_str_copy, "|"))) {
+    pipeline->commands[i++] = parse_command(command_str);
+  }
+  pipeline->n = n;
+
+  return pipeline;
 }
