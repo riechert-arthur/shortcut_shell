@@ -3,6 +3,8 @@
 
 #include <stdint.h>
 
+#define MAX_COMMAND_BYTES 1024
+
 typedef struct {
   char* program_name;
   char** args;
